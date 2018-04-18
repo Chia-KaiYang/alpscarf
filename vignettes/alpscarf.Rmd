@@ -1,0 +1,172 @@
+---
+title: "alpscarf"
+author: "Chia-Kai Yang"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{alpscarf tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+  
+## Initial Setup
+Import the library we suggest to use and the package _alpscarf_.
+```{r setup, echo = FALSE}
+library(tidyverse)
+import::from(cowplot, plot_grid)
+import::from(magrittr, "%<>%")
+library(alpscarf)
+```
+
+## Data Import
+Import example data. The synthetic dataset _example_eye_movement_data.RData_ includes __AOI visit sequences__ for 3 participants (P1 - P3). The dataset _aoi_sequence.RData_ contains the __expected visit order__ of each AOI, as well as the __color association__ of AOIs.
+```{r get dataset}
+# specify dataset name & path
+dataset_path = "../data"
+example_dataset <- file.path(dataset_path, "example_eye_movement_data.RData")
+expected_aoi_sequence <- file.path(dataset_path, "aoi_sequence.RData")
+
+# load data  
+load(example_dataset)
+load(expected_aoi_sequence)
+
+# put AOIs in sorted order
+aoi_names_pages_seq %<>%
+  arrange(AOI_order)
+```
+
+The __AOI visit sequences__ contains at least 3 columns: "p_name" "AOI" "dwell_duration"  
+```{r}
+head(eye_movement_data_systhetic)
+```
+
+The __expected visit order__ contains at least two columns: "AOI" and "AOI_order".
+```{r}
+head(aoi_names_pages_seq)
+```
+In above example dataset, we merge the __expected visit order__ with and __color association__, resulting the an extra column ```color```.
+
+## Generate Alpscarf
+When the data is ready, users can generate Alpscarf in following steps:
+
+###1. Define colors for AOIs
+
+The association between AOIs and colors MUST be an 1-to-1 mapping; i.e., n AOIs require n colors. An exmaple of such mapping is included in the dataset _aoi_sequence.RData_.
+```{r color association}
+# define colors
+my_palette <- 
+  aoi_names_pages_seq$color[]
+```
+
+###2. Translate visit sequence into bar height/width 
+
+Two funcitons are involved in this step:
+
+* _alpscarf_height_trans_: the function calculates the confomity/revisiting scores and translate them into bar height
+* _alpscarf_width_trans_: the function calculates the position of bars where bar width equals dwell duration (in logarithmic scale)
+```{r spec translation}
+# generate Alpscarf dataset
+eye_movement_data_systhetic_alp_df <- 
+  eye_movement_data_systhetic %>%
+  alpscarf_add_height(., aoi_names_pages_seq, height_mode = "linear") %>%
+  alpscarf_add_width()
+```
+Note that some parameters are specifiable in the function _alpscarf_height_trans_. Users can choose from linear mode (```height_mode = "linear"```) and exponential mode (```height_mode = "exponential"```), which controls the contrast of mountain height (i.e., make high mountains even higher, and vice versa). In exponential mode, users can also specify the base (```base_factor```) and the scale (```scale_factor```) of exponent.
+
+###3. Generate Alpscarf plot
+
+Now the dataset is ready for generating Alpscarf. In this example, we generate one Alpscarf per participant.
+
+###Example 1: Alpscarf in normalized view
+```{r alpscarf plot}
+# initialise the list storing Alpscarfs, one plot per participant
+lsa_scarf_vis <- list()
+# specify plot height
+plot_height <- max(eye_movement_data_systhetic_alp_df$seq_bar_length)
+
+for(a_p_name in unique(eye_movement_data_systhetic_alp_df$p_name)){
+  df_p <-
+    eye_movement_data_systhetic_alp_df %>%
+    filter(p_name == a_p_name) 
+  
+  # for indexing
+  a_p_nr <- 
+    strsplit(a_p_name,"P")[[1]][2] %>%
+    as.numeric()
+  
+  # specify the color association of AOIs
+  aoi_name_in_order <- 
+    aoi_names_pages_seq$AOI[]
+  df_p$AOI <- factor(df_p$AOI, levels = aoi_name_in_order)
+  
+  # Alpscarf plot generation
+  lsa_scarf_vis[[a_p_nr]] <- alpscarf_plot(df_p, my_palette, focus_mode = "transition", plot_type = "alpscarf", ymax = plot_height, NORMALIZED_VIEW = TRUE)
+}
+
+# plot Alpscarf for all participants
+plot_grid(lsa_scarf_vis[[1]], lsa_scarf_vis[[2]], lsa_scarf_vis[[3]], ncol = 1)
+```
+
+Notice that, ```ymax``` specify the height of each plot. To make all Alpscarf comparable, generating Alpscarfs in the same height is highly recommended.
+
+In Example 1, the generate plots are: 
+
+* __Alpscarf__ (```plot_type = "alpscarf"```): users can also generate traditional scarf plots (```plot_type = "scarf"```).
+* __transition-focus__ mode (```focus_mode = "transition"```): Users can also generate Alpscarf in __duration-focus__ mode (```focus_mode = "duration"```)
+* __normalized view__ (```NORMALIZED_VIEW = TRUE```): all generated plots are of the same length. Users can also generate unnormalized view (```NORMALIZED_VIEW = FALSE```) as shown in the next example.
+
+###Example 2: Alpscarf in unnormalized view
+```{r alpscarf plot in unnormalized view}
+# initialise the list storing Alpscarfs, one plot per participant
+lsa_scarf_vis <- list()
+# specify plot height
+plot_height <- max(eye_movement_data_systhetic_alp_df$seq_bar_length)
+# specify plot width range; used in unnormalized view
+max_nr_transitions <- 
+  eye_movement_data_systhetic_alp_df$trial %>%
+  max()
+max_sum_dwell_duration_category <-
+  eye_movement_data_systhetic_alp_df %>% 
+  group_by(p_name) %>% 
+  summarise(total = sum(dwell_duration_category)) %>% 
+  select(total) %>% 
+  max()
+
+for(a_p_name in unique(eye_movement_data_systhetic_alp_df$p_name)){
+  df_p <-
+    eye_movement_data_systhetic_alp_df %>%
+    filter(p_name == a_p_name) 
+  
+  # for indexing
+  a_p_nr <- 
+    strsplit(a_p_name,"P")[[1]][2] %>%
+    as.numeric()
+  
+  # specify the color association of AOIs
+  aoi_name_in_order <- 
+    aoi_names_pages_seq$AOI[]
+  df_p$AOI <- factor(df_p$AOI, levels = aoi_name_in_order)
+  
+  # Alpscarf plot generation
+  # Alpscarf plot generation
+    lsa_scarf_vis[[a_p_nr]] <- alpscarf_plot(df_p, my_palette, focus_mode = "transition", plot_type = "alpscarf", ymax = plot_height, NORMALIZED_VIEW = FALSE, max_nr_transitions = max_nr_transitions, max_sum_dwell_duration_category = max_sum_dwell_duration_category)
+}
+
+# plot Alpscarf for all participants
+plot_grid(lsa_scarf_vis[[1]], lsa_scarf_vis[[2]], lsa_scarf_vis[[3]], ncol = 1)
+```
+
+In addition to setting ```NORMALIZED_VIEW = FALSE```, unnormalized view requires two extra arguments: ```max_nr_transitions``` and ```max_sum_dwell_duration_category```, which define the maximun length of plots in __transition-focus__ mode and __duraiton-focus__ mode respectivelty.
+
+
+###4. (bonus) Distance measures of AOI visit sequences
+
+__This part is NOT necessary to generate Alpscarf plot__
+
+Additionally, users can get a few __descriptive stats__ (e.g., order_following, rereading ratio), and __edit distance__ between each AOI sequence and the expected visit order. 
+```{r edit distance}
+# generate stats of Alpscarf; NOT required in generating Alpscarf.
+stat_table_df <- alpscarf_stats(eye_movement_data_systhetic_alp_df, aoi_names_pages_seq)
+
+head(stat_table_df)
+```

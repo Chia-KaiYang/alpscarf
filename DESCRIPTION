@@ -1,0 +1,35 @@
+Package: alpscarf
+Type: Package
+Title: Alpscarf plot generation
+Version: 0.1.0
+Author: Chia-Kai Yang
+Maintainer: Chia-Kai Yang <yang@ifi.uzh.ch>
+Description: Alpscarf visualization for eye movement data
+    Use four spaces when indenting paragraphs within the Description.
+License: MIT License
+Encoding: UTF-8
+LazyData: true
+RdMacros: Rdpack
+RoxygenNote: 6.0.1
+Imports:
+  Rdpack,
+  tibble,
+  dplyr,
+  ggplot2,
+  stringdist,
+  magrittr
+Suggests: testthat,
+    knitr,
+    rmarkdown,
+    import,
+    daff,
+    cowplot
+VignetteBuilder: knitr
+Collate: 
+    'alpscarf.R'
+    'alpscarf_add_height.R'
+    'alpscarf_plot.R'
+    'alpscarf_statistics.R'
+    'alpscarf_add_width.R'
+    'data.R'
+
