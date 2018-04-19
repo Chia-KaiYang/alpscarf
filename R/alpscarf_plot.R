@@ -1,13 +1,13 @@
 #' Alpscarf plot generation
 #'
-#' @param alp_df a data frame containing the bar width/height info of Alpscarf, contains at least 6 columns "AOI" "trial" "bar_position" "dwell_duration_category" "seq_bar_length" "re_reading_bar_length"
+#' @param alp_df a data frame containing the bar width/height info of Alpscarf, contains at least 6 columns "AOI" "trial" "bar_position" "dwell_duration_log" "seq_bar_length" "re_reading_bar_length"
 #' @param palette the color definition
 #' @param focus_mode to select between transition-focus mode and duration-focus mode
 #' @param ymax the range (in y-axis) of plot
 #' @param plot_type to select between Alpscarf plot and traditional scarf plot
 #' @param NORMALIZED_VIEW to select between normalized view (TRUE) and unnormalized view (FALSE), default = TRUE. In normalized view, all generated Alpscarf are in the same length. In unnormalized view, users need to specify the maximum length of generated Alpscarf.
 #' @param max_nr_transitions specify the maximum number of transitions in given dataset. Only used in unnormalized view (NORMALIZED_VIEW= FALSE).
-#' @param max_sum_dwell_duration_category specify the maximum number of the sum of total dwell durations (in log scale) in given dataset. Only used in unnormalized view. (NORMALIZED_VIEW= FALSE)
+#' @param max_sum_dwell_duration_log specify the maximum number of the sum of total dwell durations (in log scale) in given dataset. Only used in unnormalized view. (NORMALIZED_VIEW= FALSE)
 #' @param creek_offset to adjust the position of creeks, default = 0.04
 #' @param creek_size to adjust the size of creeks, default = 2
 #' @param title print title; e.g., participant name
@@ -15,7 +15,7 @@
 #' @return Alpscarf plot as a ggplot2 object
 #' @export
 #'
-alpscarf_plot <- function(alp_df = NULL, palette = NULL, focus_mode = c("transition", "duration"), ymax = 4, plot_type = c("alpscarf", "scarf"), creek_offset = 0.04, creek_size = 2, title = NULL, NORMALIZED_VIEW = TRUE, max_nr_transitions = 0, max_sum_dwell_duration_category = 0) {
+alpscarf_plot <- function(alp_df = NULL, palette = NULL, focus_mode = c("transition", "duration"), ymax = 4, plot_type = c("alpscarf", "scarf"), creek_offset = 0.04, creek_size = 2, title = NULL, NORMALIZED_VIEW = TRUE, max_nr_transitions = 0, max_sum_dwell_duration_log = 0) {
   # check if all necessary arguments existed
   if(missing(alp_df)) stop("alp_df is required")
   if(missing(palette)) stop("palette is required")
@@ -41,12 +41,12 @@ alpscarf_plot <- function(alp_df = NULL, palette = NULL, focus_mode = c("transit
     # position of bars
     alp_df %<>%
       mutate(x_alp = bar_position,
-             width_alp = dwell_duration_category)
+             width_alp = dwell_duration_log)
     # creeks
     x_start_alp <- 0
-    x_end_alp <- sum(alp_df$dwell_duration_category) / 2
+    x_end_alp <- sum(alp_df$dwell_duration_log) / 2
     # plot range (x-axis)
-    xmax <- max_sum_dwell_duration_category + 1
+    xmax <- max_sum_dwell_duration_log + 1
   }
   if (plot_type == "alpscarf"){
     alp_df %<>%

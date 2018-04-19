@@ -8,10 +8,10 @@ alpscarf_plot(alp_df = NULL, palette = NULL, focus_mode = c("transition",
   "duration"), ymax = 4, plot_type = c("alpscarf", "scarf"),
   creek_offset = 0.04, creek_size = 2, title = NULL,
   NORMALIZED_VIEW = TRUE, max_nr_transitions = 0,
-  max_sum_dwell_duration_category = 0)
+  max_sum_dwell_duration_log = 0)
 }
 \arguments{
-\item{alp_df}{a data frame containing the bar width/height info of Alpscarf, contains at least 6 columns "AOI" "trial" "bar_position" "dwell_duration_category" "seq_bar_length" "re_reading_bar_length"}
+\item{alp_df}{a data frame containing the bar width/height info of Alpscarf, contains at least 6 columns "AOI" "trial" "bar_position" "dwell_duration_log" "seq_bar_length" "re_reading_bar_length"}
 
 \item{palette}{the color definition}
 
@@ -31,7 +31,7 @@ alpscarf_plot(alp_df = NULL, palette = NULL, focus_mode = c("transition",
 
 \item{max_nr_transitions}{specify the maximum number of transitions in given dataset. Only used in unnormalized view (NORMALIZED_VIEW= FALSE).}
 
-\item{max_sum_dwell_duration_category}{specify the maximum number of the sum of total dwell durations (in log scale) in given dataset. Only used in unnormalized view. (NORMALIZED_VIEW= FALSE)}
+\item{max_sum_dwell_duration_log}{specify the maximum number of the sum of total dwell durations (in log scale) in given dataset. Only used in unnormalized view. (NORMALIZED_VIEW= FALSE)}
 }
 \value{
 Alpscarf plot as a ggplot2 object

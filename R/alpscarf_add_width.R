@@ -20,9 +20,9 @@ alpscarf_add_width <- function(dwell_df = NULL){
     df_p_trans <-
       df_p %>%
       mutate(trial = seq(length(df_p$AOI)),
-             dwell_duration_category = 1 + round(log10(dwell_duration + 1)),
-             bar_position = 0.5 * (cumsum(dwell_duration_category) + cumsum(c(0, dwell_duration_category[-length(dwell_duration_category)]))),
-             dwell_lt_100ms = if_else(dwell_duration_category <= 3, 0, NULL))
+             dwell_duration_log = 1 + round(log10(dwell_duration + 1)),
+             bar_position = 0.5 * (cumsum(dwell_duration_log) + cumsum(c(0, dwell_duration_log[-length(dwell_duration_log)]))),
+             dwell_lt_100ms = if_else(dwell_duration_log <= 3, 0, NULL))
 
     dwell_alp_df %<>% bind_rows(df_p_trans)
   }

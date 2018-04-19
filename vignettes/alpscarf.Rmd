@@ -125,10 +125,10 @@ plot_height <- max(eye_movement_data_systhetic_alp_df$seq_bar_length)
 max_nr_transitions <- 
   eye_movement_data_systhetic_alp_df$trial %>%
   max()
-max_sum_dwell_duration_category <-
+max_sum_dwell_duration_log <-
   eye_movement_data_systhetic_alp_df %>% 
   group_by(p_name) %>% 
-  summarise(total = sum(dwell_duration_category)) %>% 
+  summarise(total = sum(dwell_duration_log)) %>% 
   select(total) %>% 
   max()
 
@@ -149,14 +149,14 @@ for(a_p_name in unique(eye_movement_data_systhetic_alp_df$p_name)){
   
   # Alpscarf plot generation
   # Alpscarf plot generation
-    lsa_scarf_vis[[a_p_nr]] <- alpscarf_plot(df_p, my_palette, focus_mode = "transition", plot_type = "alpscarf", ymax = plot_height, NORMALIZED_VIEW = FALSE, max_nr_transitions = max_nr_transitions, max_sum_dwell_duration_category = max_sum_dwell_duration_category)
+    lsa_scarf_vis[[a_p_nr]] <- alpscarf_plot(df_p, my_palette, focus_mode = "transition", plot_type = "alpscarf", ymax = plot_height, NORMALIZED_VIEW = FALSE, max_nr_transitions = max_nr_transitions, max_sum_dwell_duration_log = max_sum_dwell_duration_log)
 }
 
 # plot Alpscarf for all participants
 plot_grid(lsa_scarf_vis[[1]], lsa_scarf_vis[[2]], lsa_scarf_vis[[3]], ncol = 1)
 ```
 
-In addition to setting ```NORMALIZED_VIEW = FALSE```, unnormalized view requires two extra arguments: ```max_nr_transitions``` and ```max_sum_dwell_duration_category```, which define the maximun length of plots in __transition-focus__ mode and __duraiton-focus__ mode respectivelty.
+In addition to setting ```NORMALIZED_VIEW = FALSE```, unnormalized view requires two extra arguments: ```max_nr_transitions``` and ```max_sum_dwell_duration_log```, which define the maximun length of plots in __transition-focus__ mode and __duraiton-focus__ mode respectivelty.
 
 
 ###4. (bonus) Distance measures of AOI visit sequences
