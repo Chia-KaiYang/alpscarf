@@ -75,7 +75,7 @@ alpscarf_plot <- function(alp_df = NULL, palette = NULL, focus_mode = c("transit
           panel.grid.minor = element_blank(), # get rid of minor grid
           panel.background = element_rect(fill = "transparent"), # bg of the panel
           plot.background = element_rect(fill = "transparent"), # bg of the plot
-          plot.title = element_text(color="black", size=80, face="bold", vjust = -500),
+          plot.title = element_text(color="black", size=80, face="bold", hjust = 0, vjust = -250),
           axis.line=element_blank(),
           axis.title.x= element_blank(),
           axis.title.y = element_blank(),
