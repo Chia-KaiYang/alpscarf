@@ -15,7 +15,7 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
       radioButtons(inputId = "plot_type", label = "select the type of visualization", choiceNames = c("alpscarf", "traditional scarf"), choiceValues = c("alpscarf", "scarf"), selected = "alpscarf"),
-      radioButtons(inputId = "NORMALIZED_VIEW", label = "select the view of visualizations", choiceNames = c("original", "normalized"), choiceValues = c("original", "normalized"), selected = "normalized"),
+      radioButtons(inputId = "NORMALIZED_VIEW", label = "select the view of visualizations", choiceNames = c("unnormalized", "normalized"), choiceValues = c("original", "normalized"), selected = "normalized"),
       radioButtons(inputId = "focus_mode", label = "select the focus mode", choiceNames = c("transition-focus", "duration-focus"), choiceValues = c("transition", "duration"), selected = "transition"),
       uiOutput("selectPtcpnt")
     ),
