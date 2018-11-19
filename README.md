@@ -41,26 +41,29 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 If you use Alpscarf in your research, we would appreciate if you can insert the following citation
 
 
-> Chia-Kai Yang and Chat Wacharamanotham. 2018. Alpscarf: Augmenting Scarf Plots for Exploring Temporal Gaze Patterns. In Proceedings of the 2018 CHI Conference Extended Abstracts on Human Factors in Computing Systems (CHI EA '18). ACM, New York, NY, USA, (To appear). DOI: https://doi.org/10.1145/3170427.3188490
+> Chia-Kai Yang and Chat Wacharamanotham. 2018. Alpscarf: Augmenting Scarf Plots for Exploring Temporal Gaze Patterns. In Extended Abstracts of the 2018 CHI Conference on Human Factors in Computing Systems (CHI EA '18). ACM, New York, NY, USA, Paper LBW503, 6 pages. DOI: https://doi.org/10.1145/3170427.3188490
 
 
 In bibtex:
 
 ```
-@inproceedings{Yang2018,
+@inproceedings{Yang:2018:AAS:3170427.3188490,
  author = {Yang, Chia-Kai and Wacharamanotham, Chat},
  title = {Alpscarf: Augmenting Scarf Plots for Exploring Temporal Gaze Patterns},
- booktitle = {Proceedings of the 2018 CHI Conference Extended Abstracts on Human Factors in Computing Systems},
+ booktitle = {Extended Abstracts of the 2018 CHI Conference on Human Factors in Computing Systems},
  series = {CHI EA '18},
  year = {2018},
- location = {Montreal, Quebec, Canada},
- pages = {To appear},
+ isbn = {978-1-4503-5621-3},
+ location = {Montreal QC, Canada},
+ pages = {LBW503:1--LBW503:6},
+ articleno = {LBW503},
  numpages = {6},
- url = {https://doi.org/10.1145/3170427.3188490},
+ url = {http://doi.acm.org/10.1145/3170427.3188490},
  doi = {10.1145/3170427.3188490},
+ acmid = {3188490},
  publisher = {ACM},
  address = {New York, NY, USA},
- keywords = {visualization, eyemovement, scarf plot, transitions},
+ keywords = {eye movement, scarf plot, transitions, visualization},
 } 
 ```
 
