@@ -30,7 +30,7 @@ In `/vignettes/alpscarf.Rmd` you would find an example which guides users to gen
 
 ## Intertactive demo
 
-In `/app/app.R` you would find an shiny app which provides an interative demo of Alpscarf. Just install the `shiny` package first and you can interactively experience how different modes (e.g., transition-/duration focus, unnormalized/normalized view) play their roles in Alpscarf.
+In `/app/app.R` you would find a shiny app which provides an interative demo of Alpscarf. Install the `shiny` package first and you can interactively experience how different modes (e.g., transition-/duration focus, unnormalized/normalized view) play their roles in Alpscarf.
 
 ## License
 
