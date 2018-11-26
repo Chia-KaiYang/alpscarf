@@ -32,10 +32,6 @@ In `/vignettes/alpscarf.Rmd` you would find an example which guides users to gen
 
 In `/app/app.R` you would find a shiny app which provides an interative demo of Alpscarf. Install the `shiny` package first and you can interactively experience how different modes (e.g., transition-/duration focus, unnormalized/normalized view) play their roles in Alpscarf.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
 ## How to cite
 
 If you use Alpscarf in your research, we would appreciate if you can insert the following citation
