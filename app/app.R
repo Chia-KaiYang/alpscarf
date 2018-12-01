@@ -92,7 +92,7 @@ server <- function(input, output) {
 
   # to allow users to choose the participants they want to visualize Alpscarf
   output$selectPtcpnt <- renderUI({
-    selectInput(inputId = "Ptcpnt", label = "Participant", choices = participant_list, selected = participant_list, multiple = TRUE)
+    checkboxGroupInput(inputId = "Ptcpnt", label = "Participant", choices = participant_list, selected = participant_list)
   })
 
   # to render Alpscarf
