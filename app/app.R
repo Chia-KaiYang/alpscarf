@@ -1,6 +1,7 @@
 library(shiny)
 library(tidyverse)
 import::from(cowplot, plot_grid)
+import::from(cowplot, get_legend)
 import::from(magrittr, "%<>%")
 library(alpscarf)
 
@@ -48,11 +49,27 @@ participant_list <-
   unlist() %>%
   unname()
 
+# generate legend
+legend_plot <-
+  aoi_names_pages_seq %>%
+  ggplot(aes(x = AOI_order, y = 1, fill = AOI, width = 1)) +
+  geom_bar(stat = "identity", position = "identity") +
+  scale_fill_manual(values = my_palette, drop = TRUE, limits = levels(aoi_names_pages_seq$AOI)) +
+  theme(legend.position = "right")
+legend <- get_legend(legend_plot)
+
 # Define UI for application of Alpscarf
 ui <- fluidPage(
 
+  fluidRow(
+    column(2, titlePanel("Interactive Alpscarf")),
+    column(2, tags$img(height = 100, width = 200, src = "headpic.svg"))
+  ),
+
+  #tags$img(height = 50, width = 300, src = "headpic.svg"),
+
   # Application title
-  titlePanel("Interactive Alpscarf"),
+  #titlePanel("Interactive Alpscarf"),
 
   # Allow users to specify Alpscarf mode
   sidebarLayout(
@@ -99,11 +116,14 @@ server <- function(input, output) {
       df_p$AOI <- factor(df_p$AOI, levels = aoi_name_in_order)
 
       # Alpscarf plot generation
-      lsa_scarf_vis[[a_p_nr]] <- alpscarf_plot(df_p, my_palette, focus_mode = input$focus_mode, plot_type = input$plot_type, ymax = plot_height, NORMALIZED_VIEW = (input$NORMALIZED_VIEW == "normalized"), max_nr_transitions = max_nr_transitions, max_sum_dwell_duration_log = max_sum_dwell_duration_log)
+      lsa_scarf_vis[[a_p_nr]] <- alpscarf_plot(df_p, my_palette, focus_mode = input$focus_mode, plot_type = input$plot_type, ymax = plot_height, NORMALIZED_VIEW = (input$NORMALIZED_VIEW == "normalized"), max_nr_transitions = max_nr_transitions, max_sum_dwell_duration_log = max_sum_dwell_duration_log, title = a_p_name)
     }
 
     # plot Alpscarf for all participants
-    if (length(input$Ptcpnt) > 0){plot_grid(plotlist = lsa_scarf_vis, ncol = 1)}
+    if (length(input$Ptcpnt) > 0){
+      alp_plot <- plot_grid(plotlist = lsa_scarf_vis, ncol = 1)
+      plot_grid(alp_plot, legend, nrow = 1, rel_widths = c(3, 1))
+      }
   })
 }
 

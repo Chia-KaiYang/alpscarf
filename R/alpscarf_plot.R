@@ -75,10 +75,10 @@ alpscarf_plot <- function(alp_df = NULL, palette = NULL, focus_mode = c("transit
           panel.grid.minor = element_blank(), # get rid of minor grid
           panel.background = element_rect(fill = "transparent"), # bg of the panel
           plot.background = element_rect(fill = "transparent"), # bg of the plot
-          plot.title = element_text(color="black", size=80, face="bold", hjust = 0, vjust = -250),
-          axis.line=element_blank(),
+          plot.title = element_blank(),
+          axis.line = element_blank(),
           axis.title.x= element_blank(),
-          axis.title.y = element_blank(),
+          axis.title.y = element_text(margin = margin(t = 0, r = 0, b = 0, l = 0)),
           axis.text.x = element_blank(),
           axis.text.y = element_blank(),
           axis.ticks.x = element_blank(),
@@ -90,10 +90,11 @@ alpscarf_plot <- function(alp_df = NULL, palette = NULL, focus_mode = c("transit
     #geom_point(aes(y = dwell_lt_100ms), color = "red", size = 2)
     ylim(-1, max_y) +
     {if(!NORMALIZED_VIEW) xlim(0, xmax)} +
-    ggtitle(title)
+    ylab(title)
 
 
   # return
   alpscarf_plot
 
 }
+
