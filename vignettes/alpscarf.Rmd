@@ -100,7 +100,7 @@ for(a_p_name in unique(eye_movement_data_systhetic_alp_df$p_name)){
   df_p$AOI <- factor(df_p$AOI, levels = aoi_name_in_order)
   
   # Alpscarf plot generation
-  lsa_scarf_vis[[a_p_nr]] <- alpscarf_plot(df_p, my_palette, focus_mode = "transition", plot_type = "alpscarf", ymax = plot_height, NORMALIZED_VIEW = TRUE)
+  lsa_scarf_vis[[a_p_nr]] <- alpscarf_plot(df_p, my_palette, focus_mode = "transition", plot_type = "alpscarf", ymax = plot_height, NORMALIZED_VIEW = TRUE, title = a_p_name)
 }
 
 # plot Alpscarf for all participants
@@ -149,7 +149,7 @@ for(a_p_name in unique(eye_movement_data_systhetic_alp_df$p_name)){
   
   # Alpscarf plot generation
   # Alpscarf plot generation
-    lsa_scarf_vis[[a_p_nr]] <- alpscarf_plot(df_p, my_palette, focus_mode = "transition", plot_type = "alpscarf", ymax = plot_height, NORMALIZED_VIEW = FALSE, max_nr_transitions = max_nr_transitions, max_sum_dwell_duration_log = max_sum_dwell_duration_log)
+    lsa_scarf_vis[[a_p_nr]] <- alpscarf_plot(df_p, my_palette, focus_mode = "transition", plot_type = "alpscarf", ymax = plot_height, NORMALIZED_VIEW = FALSE, max_nr_transitions = max_nr_transitions, max_sum_dwell_duration_log = max_sum_dwell_duration_log, title = a_p_name)
 }
 
 # plot Alpscarf for all participants
