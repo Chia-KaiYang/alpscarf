@@ -13,14 +13,13 @@ devtools::install_github("Chia-KaiYang/alpscarf")
 ## Usage
 
 Read help information of `alpscarf`. 
-The package requires three dataset as inputs:
+The package requires two dataset as inputs:
 1. AOI visits which contains at least 3 columns: "p_name" "AOI" "dwell_duration"
     * All AOIs belong to the same "p_name" should represent the AOI visit (in order) of the participant "p_name".
     * The dwell_duration corresponds to the total dwell time of one dwell.
-1. Expected visit order, which contains at least two columns: "AOI" and "AOI_order"
-    * The AOI_order should be continuous integers and correspond to the expected visit order of AOIs. For example, if one expected participants to visit the AOI "A" first, then move to "B" and "C", the AOI_order of "A" should be 1, "2" for "B", and "3" for "C".
-1. Color definition, a set of color definitions in HEX code, is a 1-to-1 mapping to the expected visit order (AOI_order).
-    * In above example, if red (#ff0000) is asssigned to "A", green (#00ff00) to "B", and blue (#0000ff) to "C", the color definition set = {#ff0000, #00ff00, #0000ff}
+1. Expected visit order and color definition, which contains at least three columns: "AOI" "AOI_order" "color"
+    * Expected visit order: the AOI_order should be continuous integers and correspond to the expected visit order of each AOI. For example, if one expected participants to visit the AOI "A" first, then move to "B" and "C", the AOI_order of "A" should be 1, "2" for "B", and "3" for "C".
+    * Color definition: a set of colors in HEX code. It is a 1-to-1 mapping between each AOI and color. In above example, if red (#ff0000) is asssigned to "A", green (#00ff00) to "B", and blue (#0000ff) to "C", the color definition set = {#ff0000, #00ff00, #0000ff} for the AOI "A", "B", "C"
 
 The package would first calculate the height (`alpscarf_height_trans`) and position (`alpscarf_width_trans`) of each bar in Alpscarf, and visualize in scarf plots with mountains and valleys (`alpscarf_plot_gen`). Additionally, the package calculates several descriptive stats, and measures of sequence alignment (`alpscarf_calculate_statistics`) with the use of [stringdist](https://github.com/markvanderloo/stringdist)
 
@@ -28,9 +27,31 @@ The package would first calculate the height (`alpscarf_height_trans`) and posit
 
 In `/vignettes/alpscarf.Rmd` you would find an example which guides users to generate Alpscarf step by step.
 
-## Intertactive demo
+# (new) Intertactive demo
 
 In `/app/app.R` you would find a shiny app which provides an interative demo of Alpscarf. Install the `shiny` package first and you can interactively experience how different modes (e.g., transition-/duration focus, unnormalized/normalized view) play their roles in Alpscarf.
+
+The interactive demo already comes with a sample data for demosntration purpose. It also supports users to play with their own data. The provided data **must** contain two `csv` files: (similar to the Usage section)
+1. AOI visits with 3 columns: "p_name" "AOI" "dwell_duration". Below table shows how such dataset should look like.
+   
+|p_name | AOI | dwell_duration|
+|---|:---:|---:|
+|P1 | A | 40|
+|P1 | B | 110|
+|P1 | A | 35|
+|P1 | C | 18|
+|P2 | B | 200|
+|P2 | C | 25|
+|P2 | A | 35|
+|P2 | A | 99|
+
+2. Expected visit order and color definition with 3 columns: "AOI" "AOI_order" "color". Below table below shows how such dataset should look like.
+
+|AOI | AOI_order | color|
+|:---:|:---:|:---:|
+|A | 1 | #ff0000|
+|B | 2 | #00ff00|
+|C | 3 | #0000ff|
 
 ## How to cite
 
