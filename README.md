@@ -32,7 +32,7 @@ In `/vignettes/alpscarf.Rmd` you would find an example which guides users to gen
 In `/app/app.R` you would find a shiny app which provides an interative demo of Alpscarf. Install the `shiny` package first and you can interactively experience how different modes (e.g., transition-/duration focus, unnormalized/normalized view) play their roles in Alpscarf.
 
 The interactive demo already comes with a sample data for demosntration purpose. It also supports users to play with their own data. The provided data **must** includes two `csv` files: (similar to the Usage section)
-1. AOI visits with 3 columns: "p_name" "AOI" "dwell_duration". Below table shows how such dataset should look like.
+1. `AOI visits` with 3 columns: "p_name" "AOI" "dwell_duration". Below table shows how such dataset should look like.
    
 |p_name | AOI | dwell_duration|
 |---|:---:|---:|
@@ -45,7 +45,7 @@ The interactive demo already comes with a sample data for demosntration purpose.
 |P2 | A | 35|
 |P2 | A | 99|
 
-2. Expected visit order and color definition with 3 columns: "AOI" "AOI_order" "color". Below table below shows how such dataset should look like.
+2. `Expected visit order and color definition` with 3 columns: "AOI" "AOI_order" "color". Below table below shows how such dataset should look like.
 
 |AOI | AOI_order | color|
 |:---:|:---:|:---:|
