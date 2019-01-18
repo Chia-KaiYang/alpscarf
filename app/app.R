@@ -1,3 +1,4 @@
+
 library(shiny)
 library(tidyverse)
 import::from(cowplot, plot_grid)
@@ -43,20 +44,6 @@ expected_aoi_sequence <- file.path(dataset_path, "aoi_sequence.RData")
 load(example_dataset)
 load(expected_aoi_sequence)
 
-# generate legend
-# legend_plot <-
-#   aoi_names_pages_seq %>%
-#   ggplot(aes(x = AOI_order, y = 1, fill = AOI, width = 1)) +
-#   geom_bar(stat = "identity", position = "identity") +
-#   scale_fill_manual(values = my_palette, drop = TRUE, limits = levels(aoi_names_pages_seq$AOI)) +
-#   theme(legend.position = "top") +
-#   guides(fill = guide_legend(direction = "horizontal", nrow = 1, byrow = TRUE,
-#                              label.hjust = 1,
-#                              label.vjust = 0,
-#                              label.position = "bottom", label.theme = element_text(angle = 90)))
-# plot(legend_plot)
-# legend <- get_legend(legend_plot)
-
 # default values of the App - generated with systhetic data
 systhetic <- list()
 # synthetic AOI order
@@ -65,7 +52,7 @@ systhetic$aoi_order <-
   arrange(AOI_order)
 # synthetic colors
 systhetic$palette <-
-  aoi_names_pages_seq$color[]
+  systhetic$aoi_order$color[]
 # Alpscarf dataset
 systhetic$eye_movement_data_alp_df <-
   eye_movement_data_systhetic %>%
@@ -95,6 +82,18 @@ systhetic$participant_list <-
   unique() %>%
   str_sort(numeric = TRUE)
 
+# generate legend
+legend_plot <-
+  systhetic$aoi_order %>%
+  ggplot(aes(x = AOI_order, y = 1, fill = AOI, width = 1)) +
+  geom_bar(stat = "identity", position = "identity") +
+  scale_fill_manual(values = systhetic$palette, drop = TRUE, limits = levels(systhetic$aoi_order$AOI)) +
+  theme(legend.position = "bottom") +
+  guides(fill = guide_legend(direction = "vertical", ncol = 1,
+                             label.position = "right",
+                             reverse = FALSE))
+systhetic$legend <- get_legend(legend_plot)
+
 # Define UI for application of Alpscarf
 ui <- fluidPage(
 
@@ -103,24 +102,20 @@ ui <- fluidPage(
     column(2, tags$img(height = 100, width = 200, src = "headpic.svg"))
   ),
 
-  #tags$img(height = 50, width = 300, src = "headpic.svg"),
-
-  # Application title
-  #titlePanel("Interactive Alpscarf"),
-
   # Allow users to specify Alpscarf mode
-  sidebarLayout(
-    sidebarPanel(
+  #sidebarLayout(
+  #  sidebarPanel(
+  fluidRow(
+    column(2,
       #==============================================
 
-      #tags$hr(),
       code("Data", align = "center"),
       tags$hr(),
 
       #==============================================
       # data selection (demo data or user data)
       radioButtons(inputId = "data_src", label = "Visualization Data",
-                   choiceNames = c("Demo data", "I have my own data"), choiceValues = c("demo_data", "user_data"),
+                   choiceNames = c("Demo data", "My own data"), choiceValues = c("demo_data", "user_data"),
                    selected = "demo_data"),
 
       conditionalPanel(
@@ -154,7 +149,7 @@ ui <- fluidPage(
                    choiceNames = c("alpscarf", "traditional scarf"), choiceValues = c("alpscarf", "scarf"),
                    selected = "alpscarf"),
       radioButtons(inputId = "NORMALIZED_VIEW", label = "Visualizations View",
-                   choiceNames = c("unnormalized", "normalized"), choiceValues = c("original", "normalized"),
+                   choiceNames = c("normalized", "unnormalized"), choiceValues = c("normalized", "original"),
                    selected = "normalized"),
       radioButtons(inputId = "focus_mode", label = "Focus Mode",
                    choiceNames = c("transition-focus", "duration-focus"), choiceValues = c("transition", "duration"),
@@ -167,12 +162,14 @@ ui <- fluidPage(
     ),
 
     # Show a plot of Alpscarf
-    mainPanel(
-      #plotOutput("distLegend"),
-      plotOutput("distPlot"
-                 , height="auto"
-                 )
-    )
+    #mainPanel(
+    column(8,
+      plotOutput("distPlot", height = "auto")
+      ),
+
+    column(2,
+           plotOutput("distLegend", height = "auto")
+           )
   )
 )
 
@@ -187,7 +184,8 @@ server <- function(input, output, session) {
     max_nr_transitions = systhetic$max_nr_transitions,
     max_sum_dwell_duration_log = systhetic$max_sum_dwell_duration_log,
     participant_list = systhetic$participant_list,
-    palette = systhetic$palette
+    palette = systhetic$palette,
+    legend = systhetic$legend
     )
 
   observeEvent(input$go, {
@@ -255,6 +253,18 @@ server <- function(input, output, session) {
       unique() %>%
       str_sort(numeric = TRUE)
 
+    # generate legend
+    legend_plot <-
+      values_for_viz$aoi_order %>%
+      ggplot(aes(x = AOI_order, y = 1, fill = AOI, width = 1)) +
+      geom_bar(stat = "identity", position = "identity") +
+      scale_fill_manual(values = values_for_viz$palette, drop = TRUE, limits = levels(values_for_viz$aoi_order$AOI)) +
+      theme(legend.position = "bottom") +
+      guides(fill = guide_legend(direction = "vertical", ncol = 1,
+                                 label.position = "right",
+                                 reverse = FALSE))
+    values_for_viz$legend <- get_legend(legend_plot)
+
     # backup the read-in data
     values$eye_movement_data_alp_df <- values_for_viz$eye_movement_data_alp_df
     values$plot_height <- values_for_viz$plot_height
@@ -262,6 +272,7 @@ server <- function(input, output, session) {
     values$max_sum_dwell_duration_log <- values_for_viz$max_sum_dwell_duration_log
     values$participant_list <- values_for_viz$participant_list
     values$palette <- values_for_viz$palette
+    values$legend <- values_for_viz$legend
 
   })
   #==============================================
@@ -274,7 +285,8 @@ server <- function(input, output, session) {
     max_nr_transitions = systhetic$max_nr_transitions,
     max_sum_dwell_duration_log = systhetic$max_sum_dwell_duration_log,
     participant_list = systhetic$participant_list,
-    palette = systhetic$palette
+    palette = systhetic$palette,
+    legend = systhetic$legend
   )
 
   observeEvent(input$data_src, {
@@ -286,7 +298,7 @@ server <- function(input, output, session) {
       values_for_viz$max_sum_dwell_duration_log = values$max_sum_dwell_duration_log
       values_for_viz$participant_list = values$participant_list
       values_for_viz$palette = values$palette
-
+      values_for_viz$legend = values$legend
     } else {
     # select demo data
       values_for_viz$eye_movement_data_alp_df = systhetic$eye_movement_data_alp_df
@@ -295,6 +307,7 @@ server <- function(input, output, session) {
       values_for_viz$max_sum_dwell_duration_log = systhetic$max_sum_dwell_duration_log
       values_for_viz$participant_list = systhetic$participant_list
       values_for_viz$palette = systhetic$palette
+      values_for_viz$legend = systhetic$legend
     }
   })
   #==============================================
@@ -305,9 +318,13 @@ server <- function(input, output, session) {
   })
 
   # to render Legend
-  # output$distLegend <- renderPlot({
-  #   plot(legend)
-  # })
+  cdata <- session$clientData
+
+  output$distLegend <- renderPlot({
+    plot_grid(values_for_viz$legend)
+  }, height = function() {
+    length(values_for_viz$palette) * 20
+  })
 
   # to render Alpscarf
   output$distPlot <- renderPlot({
@@ -336,8 +353,6 @@ server <- function(input, output, session) {
     # plot Alpscarf for all participants
     if (length(input$Ptcpnt) > 0){
       plot_grid(plotlist = lsa_scarf_vis, ncol = 1)
-      #alp_plot <- plot_grid(plotlist = lsa_scarf_vis, ncol = 1)
-      #plot_grid(alp_plot, legend, nrow = 1, rel_widths = c(3, 1))
       }
   }, height = function() {
     input$alpscarf_height * length(values_for_viz$participant_list)
