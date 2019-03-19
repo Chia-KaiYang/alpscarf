@@ -87,11 +87,13 @@ legend_plot <-
   systhetic$aoi_order %>%
   ggplot(aes(x = AOI_order, y = 1, fill = AOI, width = 1)) +
   geom_bar(stat = "identity", position = "identity") +
-  scale_fill_manual(values = systhetic$palette, drop = TRUE, limits = levels(systhetic$aoi_order$AOI)) +
+  scale_fill_manual(values = aoi_names_pages_seq$color, drop = TRUE, limits = aoi_names_pages_seq$AOI) +
   theme(legend.position = "bottom") +
-  guides(fill = guide_legend(direction = "vertical", ncol = 1,
-                             label.position = "right",
-                             reverse = FALSE))
+  guides(fill = guide_legend(
+    direction = "vertical",
+    ncol = 1,
+    label.position = "right",
+    reverse = FALSE))
 systhetic$legend <- get_legend(legend_plot)
 
 # Define UI for application of Alpscarf
@@ -219,7 +221,7 @@ server <- function(input, output, session) {
 
     # define colors
     values_for_viz$palette <-
-      aoi_names_pages_seq$color[]
+      values_for_viz$aoi_order$color[]
 
     # generate Alpscarf dataset
     values_for_viz$eye_movement_data_alp_df <-
@@ -258,7 +260,7 @@ server <- function(input, output, session) {
       values_for_viz$aoi_order %>%
       ggplot(aes(x = AOI_order, y = 1, fill = AOI, width = 1)) +
       geom_bar(stat = "identity", position = "identity") +
-      scale_fill_manual(values = values_for_viz$palette, drop = TRUE, limits = levels(values_for_viz$aoi_order$AOI)) +
+      scale_fill_manual(values = aoi_names_pages_seq$color, drop = TRUE, limits = aoi_names_pages_seq$AOI) +
       theme(legend.position = "bottom") +
       guides(fill = guide_legend(direction = "vertical", ncol = 1,
                                  label.position = "right",
@@ -273,6 +275,7 @@ server <- function(input, output, session) {
     values$participant_list <- values_for_viz$participant_list
     values$palette <- values_for_viz$palette
     values$legend <- values_for_viz$legend
+    values$aoi_order = values_for_viz$aoi_order
 
   })
   #==============================================
@@ -286,7 +289,8 @@ server <- function(input, output, session) {
     max_sum_dwell_duration_log = systhetic$max_sum_dwell_duration_log,
     participant_list = systhetic$participant_list,
     palette = systhetic$palette,
-    legend = systhetic$legend
+    legend = systhetic$legend,
+    aoi_order = systhetic$aoi_order
   )
 
   observeEvent(input$data_src, {
@@ -299,6 +303,7 @@ server <- function(input, output, session) {
       values_for_viz$participant_list = values$participant_list
       values_for_viz$palette = values$palette
       values_for_viz$legend = values$legend
+      values_for_viz$aoi_order = values$aoi_order
     } else {
     # select demo data
       values_for_viz$eye_movement_data_alp_df = systhetic$eye_movement_data_alp_df
@@ -308,6 +313,7 @@ server <- function(input, output, session) {
       values_for_viz$participant_list = systhetic$participant_list
       values_for_viz$palette = systhetic$palette
       values_for_viz$legend = systhetic$legend
+      values_for_viz$aoi_order = systhetic$aoi_order
     }
   })
   #==============================================
@@ -343,7 +349,7 @@ server <- function(input, output, session) {
 
       # specify the color association of AOIs
       aoi_name_in_order <-
-        aoi_names_pages_seq$AOI[]
+        values_for_viz$aoi_order$AOI[]
       df_p$AOI <- factor(df_p$AOI, levels = aoi_name_in_order)
 
       # Alpscarf plot generation
