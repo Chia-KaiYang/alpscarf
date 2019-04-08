@@ -1,4 +1,4 @@
-# alpscarf
+# Alpscarf
 
 `alpscarf` is an R package for visualizing AOI visits in augmented scarf plots.
 The visualization is originally developed (but not limited) in the context of eye-tracking research.
