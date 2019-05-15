@@ -166,7 +166,8 @@ ui <- fluidPage(
     # Show a plot of Alpscarf
     #mainPanel(
     column(8,
-      plotOutput("distPlot", height = "auto")
+           downloadButton(outputId = "down", label = "Download the plot"),
+           plotOutput("distPlot", height = "auto")
       ),
 
     column(2,
@@ -333,8 +334,8 @@ server <- function(input, output, session) {
   })
 
   # to render Alpscarf
-  output$distPlot <- renderPlot({
-
+  plotInput <- reactive({
+      
     # initialise the list storing Alpscarfs, one plot per participant
     lsa_scarf_vis <- list()
     for(a_p_name in unique(input$Ptcpnt)){
@@ -352,17 +353,39 @@ server <- function(input, output, session) {
         values_for_viz$aoi_order$AOI[]
       df_p$AOI <- factor(df_p$AOI, levels = aoi_name_in_order)
 
+      # remove empty plot
+      lsa_scarf_vis <- lsa_scarf_vis[lengths(lsa_scarf_vis) != 0]
       # Alpscarf plot generation
       lsa_scarf_vis[[a_p_nr]] <- alpscarf_plot(df_p, values_for_viz$palette, focus_mode = input$focus_mode, plot_type = input$plot_type, ymax = values_for_viz$plot_height, NORMALIZED_VIEW = (input$NORMALIZED_VIEW == "normalized"), max_nr_transitions = values_for_viz$max_nr_transitions, max_sum_dwell_duration_log = values_for_viz$max_sum_dwell_duration_log, title = a_p_name)
     }
 
+    # remove empty plot
+    lsa_scarf_vis_to_plot <- lsa_scarf_vis[lengths(lsa_scarf_vis) != 0]
+    
     # plot Alpscarf for all participants
     if (length(input$Ptcpnt) > 0){
-      plot_grid(plotlist = lsa_scarf_vis, ncol = 1)
+      plot_grid(plotlist = lsa_scarf_vis_to_plot, ncol = 1)
       }
+  }
+  )
+  
+  # plot on screen
+  output$distPlot <- renderPlot({
+    print(plotInput())
   }, height = function() {
     input$alpscarf_height * length(values_for_viz$participant_list)
   }
+  )
+  
+  
+  output$down <- downloadHandler(
+    # specify the file name
+    filename = function(){
+      paste("alpscarf", "pdf", sep = ".")
+    },
+    content = function(file){
+      ggsave(file, plot = plotInput(), device = "pdf", width = 50, height = 100, unit = "cm")
+    }
   )
 }
 
