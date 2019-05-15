@@ -1,4 +1,4 @@
-# alpscarf
+# Alpscarf
 
 `alpscarf` is an R package for visualizing AOI visits in augmented scarf plots.
 The visualization is originally developed (but not limited) in the context of eye-tracking research.
@@ -19,7 +19,7 @@ The package requires two dataset as inputs:
     * The dwell_duration corresponds to the total dwell time of one dwell.
 1. Expected visit order and color definition, which contains at least three columns: "AOI" "AOI_order" "color"
     * Expected visit order: the AOI_order should be continuous integers and correspond to the expected visit order of each AOI. For example, if one expected participants to visit the AOI "A" first, then move to "B" and "C", the AOI_order of "A" should be 1, "2" for "B", and "3" for "C".
-    * Color definition: a set of colors in HEX code. It is a 1-to-1 mapping between each AOI and color. In above example, if red (#ff0000) is asssigned to "A", green (#00ff00) to "B", and blue (#0000ff) to "C", the color definition set = {#ff0000, #00ff00, #0000ff} for the AOI "A", "B", "C"
+    * Color definition: a set of colors in HEX code. It is a 1-to-1 mapping between each AOI and color. In above example, if red (#ff0000) is asssigned to "A", green (#00ff00) to "B", and blue (#0000ff) to "C", the color definition set = {"#ff0000", "#00ff00", "#0000ff"} for the AOI "A", "B", "C"
 
 The package would first calculate the height (`alpscarf_height_trans`) and position (`alpscarf_width_trans`) of each bar in Alpscarf, and visualize in scarf plots with mountains and valleys (`alpscarf_plot_gen`). Additionally, the package calculates several descriptive stats, and measures of sequence alignment (`alpscarf_calculate_statistics`) with the use of [stringdist](https://github.com/markvanderloo/stringdist)
 
@@ -48,7 +48,7 @@ The interactive demo already comes with a sample data for demosntration purpose.
 |P2 | A | 35|
 |P2 | A | 99|
 
-2. `Expected visit order and color definition` with 3 columns: "AOI" "AOI_order" "color". Below table below shows how such dataset should look like.
+2. `Expected visit order and color definition` with 3 columns: "AOI" "AOI_order" "color". Below table below shows how such dataset should look like. In the `csv` file, use quotation mark for the HEX color code (e.g., "#ff0000").
 
 |AOI | AOI_order | color|
 |:---:|:---:|:---:|
