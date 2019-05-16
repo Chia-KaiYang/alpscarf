@@ -327,8 +327,12 @@ server <- function(input, output, session) {
   # to render Legend
   cdata <- session$clientData
 
-  output$distLegend <- renderPlot({
+  plotLegend <- reactive({
     plot_grid(values_for_viz$legend)
+  })
+    
+  output$distLegend <- renderPlot({
+    print(plotLegend())
   }, height = function() {
     length(values_for_viz$palette) * 20
   })
@@ -366,17 +370,18 @@ server <- function(input, output, session) {
     if (length(input$Ptcpnt) > 0){
       plot_grid(plotlist = lsa_scarf_vis_to_plot, ncol = 1)
       }
-  }
-  )
+  })
   
   # plot on screen
   output$distPlot <- renderPlot({
     print(plotInput())
   }, height = function() {
     input$alpscarf_height * length(values_for_viz$participant_list)
-  }
-  )
+  })
   
+  plotImage <- reactive({
+    plot_grid(plotInput(), plotLegend(), nrow = 1, rel_widths = c(6, 1), align = "v", axis = "tblr")
+  })
   
   output$down <- downloadHandler(
     # specify the file name
@@ -384,7 +389,7 @@ server <- function(input, output, session) {
       paste("alpscarf", "pdf", sep = ".")
     },
     content = function(file){
-      ggsave(file, plot = plotInput(), device = "pdf", width = 50, height = 100, unit = "cm")
+      ggsave(file, plot = plotImage(), device = "pdf", width = 50, height = 100, unit = "cm")
     }
   )
 }
