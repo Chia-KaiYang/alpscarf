@@ -15,7 +15,7 @@
 #' @return Alpscarf plot as a ggplot2 object
 #' @export
 #'
-alpscarf_plot <- function(alp_df = NULL, palette = NULL, focus_mode = c("transition", "duration"), ymax = 4, plot_type = c("alpscarf", "scarf"), creek_offset = 0.04, creek_size = 2, title = NULL, NORMALIZED_VIEW = TRUE, max_nr_transitions = 0, max_sum_dwell_duration_log = 0) {
+alpscarf_plot <- function(alp_df = NULL, palette = NULL, focus_mode = c("transition", "duration"), ymax = 4, plot_type = c("alpscarf", "scarf"), creek_offset = 0.04, creek_size = 2, title = NULL, NORMALIZED_VIEW = TRUE, max_nr_transitions = 0, max_sum_dwell_duration = 0) {
   # check if all necessary arguments existed
   if(missing(alp_df)) stop("alp_df is required")
   if(missing(palette)) stop("palette is required")
@@ -41,12 +41,12 @@ alpscarf_plot <- function(alp_df = NULL, palette = NULL, focus_mode = c("transit
     # position of bars
     alp_df %<>%
       mutate(x_alp = bar_position,
-             width_alp = dwell_duration_log)
+             width_alp = dwell_duration)
     # creeks
     x_start_alp <- 0
-    x_end_alp <- sum(alp_df$dwell_duration_log) / 2
+    x_end_alp <- sum(alp_df$dwell_duration) / 2
     # plot range (x-axis)
-    xmax <- max_sum_dwell_duration_log + 1
+    xmax <- max_sum_dwell_duration + 1
   }
   if (plot_type == "alpscarf"){
     alp_df %<>%

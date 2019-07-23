@@ -4,7 +4,7 @@
 \alias{alpscarf_add_width}
 \title{translate durations into bar width}
 \usage{
-alpscarf_add_width(dwell_df = NULL)
+alpscarf_add_width(dwell_df = NULL, width_mode = c("linear", "log"))
 }
 \arguments{
 \item{dwell_df}{a data frame contains at least 3 columns, "p_name" "AOI" "dwell_duration"}

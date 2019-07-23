@@ -62,17 +62,17 @@ systhetic$eye_movement_data_alp_df <-
   merge_sequence() %>%
 
   alpscarf_add_height(., systhetic$aoi_order, height_mode = "linear") %>%
-  alpscarf_add_width()
+  alpscarf_add_width(., width_mode = "linear")
 # specify plot height
 systhetic$plot_height <- max(systhetic$eye_movement_data_alp_df$seq_bar_length)
 # specify plot width range; used in unnormalized view
 systhetic$max_nr_transitions <-
   systhetic$eye_movement_data_alp_df$trial %>%
   max()
-systhetic$max_sum_dwell_duration_log <-
+systhetic$max_sum_dwell_duration <-
   systhetic$eye_movement_data_alp_df %>%
   group_by(p_name) %>%
-  summarise(total = sum(dwell_duration_log)) %>%
+  summarise(total = sum(dwell_duration)) %>%
   select(total) %>%
   max()
 # participant list
@@ -185,7 +185,7 @@ server <- function(input, output, session) {
     eye_movement_data_alp_df = systhetic$eye_movement_data_alp_df,
     plot_height = systhetic$plot_height,
     max_nr_transitions = systhetic$max_nr_transitions,
-    max_sum_dwell_duration_log = systhetic$max_sum_dwell_duration_log,
+    max_sum_dwell_duration = systhetic$max_sum_dwell_duration,
     participant_list = systhetic$participant_list,
     palette = systhetic$palette,
     legend = systhetic$legend
@@ -233,7 +233,7 @@ server <- function(input, output, session) {
       merge_sequence() %>%
 
       alpscarf_add_height(., values_for_viz$aoi_order, height_mode = "linear") %>%
-      alpscarf_add_width()
+      alpscarf_add_width(., width_mode = "linear")
 
     # specify plot height
     values_for_viz$plot_height <- max(values_for_viz$eye_movement_data_alp_df$seq_bar_length)
@@ -242,10 +242,10 @@ server <- function(input, output, session) {
     values_for_viz$max_nr_transitions <-
       values_for_viz$eye_movement_data_alp_df$trial %>%
       max()
-    values_for_viz$max_sum_dwell_duration_log <-
+    values_for_viz$max_sum_dwell_duration <-
       values_for_viz$eye_movement_data_alp_df %>%
       group_by(p_name) %>%
-      summarise(total = sum(dwell_duration_log)) %>%
+      summarise(total = sum(dwell_duration)) %>%
       select(total) %>%
       max()
 
@@ -272,7 +272,7 @@ server <- function(input, output, session) {
     values$eye_movement_data_alp_df <- values_for_viz$eye_movement_data_alp_df
     values$plot_height <- values_for_viz$plot_height
     values$max_nr_transitions <- values_for_viz$max_nr_transitions
-    values$max_sum_dwell_duration_log <- values_for_viz$max_sum_dwell_duration_log
+    values$max_sum_dwell_duration <- values_for_viz$max_sum_dwell_duration
     values$participant_list <- values_for_viz$participant_list
     values$palette <- values_for_viz$palette
     values$legend <- values_for_viz$legend
@@ -287,7 +287,7 @@ server <- function(input, output, session) {
     eye_movement_data_alp_df = systhetic$eye_movement_data_alp_df,
     plot_height = systhetic$plot_height,
     max_nr_transitions = systhetic$max_nr_transitions,
-    max_sum_dwell_duration_log = systhetic$max_sum_dwell_duration_log,
+    max_sum_dwell_duration = systhetic$max_sum_dwell_duration,
     participant_list = systhetic$participant_list,
     palette = systhetic$palette,
     legend = systhetic$legend,
@@ -300,7 +300,7 @@ server <- function(input, output, session) {
       values_for_viz$eye_movement_data_alp_df = values$eye_movement_data_alp_df
       values_for_viz$plot_height = values$plot_height
       values_for_viz$max_nr_transitions = values$max_nr_transitions
-      values_for_viz$max_sum_dwell_duration_log = values$max_sum_dwell_duration_log
+      values_for_viz$max_sum_dwell_duration = values$max_sum_dwell_duration
       values_for_viz$participant_list = values$participant_list
       values_for_viz$palette = values$palette
       values_for_viz$legend = values$legend
@@ -310,7 +310,7 @@ server <- function(input, output, session) {
       values_for_viz$eye_movement_data_alp_df = systhetic$eye_movement_data_alp_df
       values_for_viz$plot_height = systhetic$plot_height
       values_for_viz$max_nr_transitions = systhetic$max_nr_transitions
-      values_for_viz$max_sum_dwell_duration_log = systhetic$max_sum_dwell_duration_log
+      values_for_viz$max_sum_dwell_duration = systhetic$max_sum_dwell_duration
       values_for_viz$participant_list = systhetic$participant_list
       values_for_viz$palette = systhetic$palette
       values_for_viz$legend = systhetic$legend
@@ -330,7 +330,7 @@ server <- function(input, output, session) {
   plotLegend <- reactive({
     plot_grid(values_for_viz$legend)
   })
-    
+
   output$distLegend <- renderPlot({
     print(plotLegend())
   }, height = function() {
@@ -339,7 +339,7 @@ server <- function(input, output, session) {
 
   # to render Alpscarf
   plotInput <- reactive({
-      
+
     # initialise the list storing Alpscarfs, one plot per participant
     lsa_scarf_vis <- list()
     for(a_p_name in unique(input$Ptcpnt)){
@@ -360,36 +360,38 @@ server <- function(input, output, session) {
       # remove empty plot
       lsa_scarf_vis <- lsa_scarf_vis[lengths(lsa_scarf_vis) != 0]
       # Alpscarf plot generation
-      lsa_scarf_vis[[a_p_nr]] <- alpscarf_plot(df_p, values_for_viz$palette, focus_mode = input$focus_mode, plot_type = input$plot_type, ymax = values_for_viz$plot_height, NORMALIZED_VIEW = (input$NORMALIZED_VIEW == "normalized"), max_nr_transitions = values_for_viz$max_nr_transitions, max_sum_dwell_duration_log = values_for_viz$max_sum_dwell_duration_log, title = a_p_name)
+      lsa_scarf_vis[[a_p_nr]] <- alpscarf_plot(df_p, values_for_viz$palette, focus_mode = input$focus_mode, plot_type = input$plot_type, ymax = values_for_viz$plot_height, NORMALIZED_VIEW = (input$NORMALIZED_VIEW == "normalized"), max_nr_transitions = values_for_viz$max_nr_transitions, max_sum_dwell_duration = values_for_viz$max_sum_dwell_duration, title = a_p_name)
     }
 
     # remove empty plot
     lsa_scarf_vis_to_plot <- lsa_scarf_vis[lengths(lsa_scarf_vis) != 0]
-    
+
     # plot Alpscarf for all participants
     if (length(input$Ptcpnt) > 0){
       plot_grid(plotlist = lsa_scarf_vis_to_plot, ncol = 1)
       }
   })
-  
+
   # plot on screen
   output$distPlot <- renderPlot({
     print(plotInput())
   }, height = function() {
     input$alpscarf_height * length(values_for_viz$participant_list)
   })
-  
+
   plotImage <- reactive({
     plot_grid(plotInput(), plotLegend(), nrow = 1, rel_widths = c(6, 1), align = "v", axis = "tblr")
   })
-  
+
   output$down <- downloadHandler(
     # specify the file name
     filename = function(){
       paste("alpscarf", "pdf", sep = ".")
     },
     content = function(file){
-      ggsave(file, plot = plotImage(), device = "pdf", width = 50, height = 100, unit = "cm")
+      height_in_px = input$alpscarf_height * length(values_for_viz$participant_list)
+      height_in_cm = min(100, height_in_px/20)
+      ggsave(file, plot = plotImage(), device = "pdf", width = 50, height = height_in_cm, unit = "cm")
     }
   )
 }
