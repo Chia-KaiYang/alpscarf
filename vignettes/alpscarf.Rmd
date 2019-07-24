@@ -16,6 +16,34 @@ library(tidyverse)
 import::from(cowplot, plot_grid)
 import::from(magrittr, "%<>%")
 library(alpscarf)
+library(RColorBrewer)
+
+merge_sequence <- function(lsa_df_) {
+
+  lsa_reduced_dwell_df <- NULL
+
+  for (a_p_name in unique(lsa_df_$p_name)){
+    df_p <-
+      lsa_df_ %>%
+      filter(p_name == a_p_name) %>%
+      mutate(cum_duration = cumsum(duration))
+
+    runlength <- rle(df_p$AOI)
+
+    rl_table <- tibble(AOI = runlength$values, length = runlength$lengths)
+    rl_table %<>%
+      mutate(total_duration_current_index = cumsum(length),
+             total_duration_pre_index = lag(total_duration_current_index, default = 0),
+             dwell_duration = df_p$cum_duration[total_duration_current_index] - c(0, df_p$cum_duration[total_duration_pre_index]),
+             p_name = a_p_name
+      ) %>%
+      select(p_name, AOI, dwell_duration)
+
+    lsa_reduced_dwell_df %<>% bind_rows(rl_table)
+  }
+  # return
+  lsa_reduced_dwell_df
+}
 ```
 
 ## Data Import
@@ -68,8 +96,17 @@ Two funcitons are involved in this step:
 # generate Alpscarf dataset
 eye_movement_data_systhetic_alp_df <- 
   eye_movement_data_systhetic %>%
-  alpscarf_add_height(., aoi_names_pages_seq, height_mode = "linear") %>%
+  
+  # merge the fixations within the same AOI and derive the dwell duration
+  rename(duration = dwell_duration) %>%
+  merge_sequence() %>%
+  
+  alpscarf_add_height(., aoi_names_pages_seq, 
+                      height_mode = "exponential", scale_factor = 0.2) %>%
   alpscarf_add_width()
+
+# for video prototype
+#eye_movement_data_systhetic_alp_df$re_reading_bar_length = 0
 ```
 Note that some parameters are specifiable in the function _alpscarf_height_trans_. Users can choose from linear mode (```height_mode = "linear"```) and exponential mode (```height_mode = "exponential"```), which controls the contrast of mountain height (i.e., make high mountains even higher, and vice versa). In exponential mode, users can also specify the base (```base_factor```) and the scale (```scale_factor```) of exponent.
 
