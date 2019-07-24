@@ -56,9 +56,11 @@ alpscarf_revisit <- function(df_p = NULL, w = 3){
   # initialize revisiting score
   r <- rep(0, length(df_p$AOI))
 
-  for(i in 1:(length(df_p$AOI) - w + 1)){
-    if(df_p$AOI[i] == df_p$AOI[i + w - 1]){
-      r[i: (i + w - 1)] <- r[i: (i + w - 1)] + 1
+  for(i in 1 : length(df_p$AOI)){
+    if(i <= (length(df_p$AOI) - w + 1)){
+      if(df_p$AOI[i] == df_p$AOI[i + w - 1]){
+        r[i: (i + w - 1)] <- r[i: (i + w - 1)] + 1
+      }
     }
   }
   # return
@@ -80,13 +82,15 @@ alpscarf_conform <- function(df_p = NULL, aoi_names_pages_seq = NULL, s_min = 2)
   df_p %<>%
     left_join(.,aoi_names_pages_seq, by = c("AOI"))
 
-  for(i in 1 : (length(df_p$AOI) - s_min + 1)){
-    for(s in s_min : min(length(df_p$AOI_order), length(df_p$AOI) - i + 1)){
-      order_check <- df_p$AOI_order[i + s - 1] - df_p$AOI_order[i + s - 2]
-      if(order_check == 1){
-        c[i: (i + s - 1)] <- c[i: (i + s - 1)] + 1
-      } else {
-        break
+  for(i in 1 : length(df_p$AOI)){
+    if (i <= (length(df_p$AOI) - s_min + 1)){
+      for(s in s_min : min(length(df_p$AOI_order), length(df_p$AOI) - i + 1)){
+        order_check <- df_p$AOI_order[i + s - 1] - df_p$AOI_order[i + s - 2]
+        if(order_check == 1){
+          c[i: (i + s - 1)] <- c[i: (i + s - 1)] + 1
+        } else {
+          break
+        }
       }
     }
   }
