@@ -53,9 +53,15 @@ systhetic$aoi_order <-
 # synthetic colors
 systhetic$palette <-
   systhetic$aoi_order$color[]
+# synthetic raw dataset
+systhetic$eye_movement_data <-
+  eye_movement_data_systhetic
 # Alpscarf dataset
 systhetic$eye_movement_data_alp_df <-
-  eye_movement_data_systhetic %>%
+  systhetic$eye_movement_data %>%
+
+  # filter out glitch
+  filter(dwell_duration >= 0) %>%
 
   # merge the fixations within the same AOI and derive the dwell duration
   rename(duration = dwell_duration) %>%
@@ -156,6 +162,9 @@ ui <- fluidPage(
       radioButtons(inputId = "focus_mode", label = "Focus Mode",
                    choiceNames = c("transition-focus", "duration-focus"), choiceValues = c("transition", "duration"),
                    selected = "transition"),
+      sliderInput(inputId = "glitch_width", label = "Glitch Width (ms)",
+                  min = 0, max = 500,
+                  value = 0),
       sliderInput(inputId = "alpscarf_height", label = "Height of Alpscarf",
                   min = 10, max = 500,
                   value = 100),
@@ -180,105 +189,159 @@ ui <- fluidPage(
 server <- function(input, output, session) {
 
   #==============================================
-  # values: read-in data
-  values <- reactiveValues(
+  # values: synthetic data
+  syn_values <- reactiveValues(
+    eye_movement_data = systhetic$eye_movement_data,
     eye_movement_data_alp_df = systhetic$eye_movement_data_alp_df,
     plot_height = systhetic$plot_height,
     max_nr_transitions = systhetic$max_nr_transitions,
     max_sum_dwell_duration = systhetic$max_sum_dwell_duration,
     participant_list = systhetic$participant_list,
     palette = systhetic$palette,
-    legend = systhetic$legend
-    )
+    legend = systhetic$legend,
+    aoi_order = systhetic$aoi_order
+  )
 
-  observeEvent(input$go, {
-
-    # read-in eye movement data
-    eye_movement_data <-
-      read.table(
-        file = input$file1$datapath,
-        sep = ",",
-        header = TRUE,
-        colClasses = c("p_name" = "character",
-                       "AOI" = "character",
-                       "dwell_duration" = "numeric")) %>%
-      as.tibble()
-
-    # read-in AOI order and color coding data
-    aoi_names_pages_seq <-
-      read.table(
-        file = input$file2$datapath,
-        sep = ",",
-        header = TRUE,
-        colClasses = c("AOI" = "character",
-                       "AOI_order" = "numeric",
-                       "color" = "character")) %>%
-      as.tibble()
-
-    # AOI order
-    values_for_viz$aoi_order <-
-      aoi_names_pages_seq %>%
-      arrange(AOI_order)
-
-    # define colors
-    values_for_viz$palette <-
-      values_for_viz$aoi_order$color[]
+  observeEvent(input$glitch_width, {
 
     # generate Alpscarf dataset
-    values_for_viz$eye_movement_data_alp_df <-
-      eye_movement_data %>%
+    syn_values$eye_movement_data_alp_df <-
+      syn_values$eye_movement_data %>%
+
+      # filter out glitch
+      filter(dwell_duration >= input$glitch_width) %>%
 
       # merge the fixations within the same AOI and derive the dwell duration
       rename(duration = dwell_duration) %>%
       merge_sequence() %>%
 
-      alpscarf_add_height(., values_for_viz$aoi_order, height_mode = "linear") %>%
+      alpscarf_add_height(., syn_values$aoi_order, height_mode = "linear") %>%
       alpscarf_add_width(., width_mode = "linear")
 
     # specify plot height
-    values_for_viz$plot_height <- max(values_for_viz$eye_movement_data_alp_df$seq_bar_length)
+    syn_values$plot_height <- max(syn_values$eye_movement_data_alp_df$seq_bar_length)
 
     # specify plot width range; used in unnormalized view
-    values_for_viz$max_nr_transitions <-
-      values_for_viz$eye_movement_data_alp_df$trial %>%
+    syn_values$max_nr_transitions <-
+      syn_values$eye_movement_data_alp_df$trial %>%
       max()
-    values_for_viz$max_sum_dwell_duration <-
-      values_for_viz$eye_movement_data_alp_df %>%
+    syn_values$max_sum_dwell_duration <-
+      syn_values$eye_movement_data_alp_df %>%
       group_by(p_name) %>%
       summarise(total = sum(dwell_duration)) %>%
       select(total) %>%
       max()
 
     # generate list of participant in dataset
-    values_for_viz$participant_list <-
-      values_for_viz$eye_movement_data_alp_df %>%
+    syn_values$participant_list <-
+      syn_values$eye_movement_data_alp_df %>%
       pull(p_name) %>%
       unique() %>%
       str_sort(numeric = TRUE)
 
-    # generate legend
-    legend_plot <-
-      values_for_viz$aoi_order %>%
-      ggplot(aes(x = AOI_order, y = 1, fill = AOI, width = 1)) +
-      geom_bar(stat = "identity", position = "identity") +
-      scale_fill_manual(values = aoi_names_pages_seq$color, drop = TRUE, limits = aoi_names_pages_seq$AOI) +
-      theme(legend.position = "bottom") +
-      guides(fill = guide_legend(direction = "vertical", ncol = 1,
-                                 label.position = "right",
-                                 reverse = FALSE))
-    values_for_viz$legend <- get_legend(legend_plot)
+  }, ignoreInit = TRUE)
+  #==============================================
 
-    # backup the read-in data
-    values$eye_movement_data_alp_df <- values_for_viz$eye_movement_data_alp_df
-    values$plot_height <- values_for_viz$plot_height
-    values$max_nr_transitions <- values_for_viz$max_nr_transitions
-    values$max_sum_dwell_duration <- values_for_viz$max_sum_dwell_duration
-    values$participant_list <- values_for_viz$participant_list
-    values$palette <- values_for_viz$palette
-    values$legend <- values_for_viz$legend
-    values$aoi_order = values_for_viz$aoi_order
+  #==============================================
+  # values: read-in data
+  values <- reactiveValues(
+    eye_movement_data = systhetic$eye_movement_data,
+    eye_movement_data_alp_df = systhetic$eye_movement_data_alp_df,
+    plot_height = systhetic$plot_height,
+    max_nr_transitions = systhetic$max_nr_transitions,
+    max_sum_dwell_duration = systhetic$max_sum_dwell_duration,
+    participant_list = systhetic$participant_list,
+    palette = systhetic$palette,
+    legend = systhetic$legend,
+    aoi_order = systhetic$aoi_order
+    )
 
+  toListen_readData <- reactive({
+    list(input$go, input$glitch_width)
   })
+  observeEvent(toListen_readData(), {
+    # read-in dataset
+    if(input$go){
+      # read-in eye movement data
+      values$eye_movement_data <-
+        read.table(
+          file = input$file1$datapath,
+          sep = ",",
+          header = TRUE,
+          colClasses = c("p_name" = "character",
+                         "AOI" = "character",
+                         "dwell_duration" = "numeric")) %>%
+        as.tibble()
+
+      # read-in AOI order and color coding data
+      aoi_names_pages_seq <-
+        read.table(
+          file = input$file2$datapath,
+          sep = ",",
+          header = TRUE,
+          colClasses = c("AOI" = "character",
+                         "AOI_order" = "numeric",
+                         "color" = "character")) %>%
+        as.tibble()
+
+      # AOI order
+      values$aoi_order <-
+        aoi_names_pages_seq %>%
+        arrange(AOI_order)
+
+      # define colors
+      values$palette <-
+        values$aoi_order$color[]
+
+      # generate legend
+      legend_plot <-
+        values$aoi_order %>%
+        ggplot(aes(x = AOI_order, y = 1, fill = AOI, width = 1)) +
+        geom_bar(stat = "identity", position = "identity") +
+        scale_fill_manual(values = aoi_names_pages_seq$color, drop = TRUE, limits = aoi_names_pages_seq$AOI) +
+        theme(legend.position = "bottom") +
+        guides(fill = guide_legend(direction = "vertical", ncol = 1,
+                                   label.position = "right",
+                                   reverse = FALSE))
+      values$legend <- get_legend(legend_plot)
+    }
+
+    # generate Alpscarf dataset
+    values$eye_movement_data_alp_df <-
+      values$eye_movement_data %>%
+
+      # filter out glitch
+      filter(dwell_duration >= input$glitch_width) %>%
+
+      # merge the fixations within the same AOI and derive the dwell duration
+      rename(duration = dwell_duration) %>%
+      merge_sequence() %>%
+
+      alpscarf_add_height(., values$aoi_order, height_mode = "linear") %>%
+      alpscarf_add_width(., width_mode = "linear")
+
+    # specify plot height
+    values$plot_height <- max(values$eye_movement_data_alp_df$seq_bar_length)
+
+    # specify plot width range; used in unnormalized view
+    values$max_nr_transitions <-
+      values$eye_movement_data_alp_df$trial %>%
+      max()
+    values$max_sum_dwell_duration <-
+      values$eye_movement_data_alp_df %>%
+      group_by(p_name) %>%
+      summarise(total = sum(dwell_duration)) %>%
+      select(total) %>%
+      max()
+
+    # generate list of participant in dataset
+    values$participant_list <-
+      values$eye_movement_data_alp_df %>%
+      pull(p_name) %>%
+      unique() %>%
+      str_sort(numeric = TRUE)
+
+  }, ignoreInit = TRUE)
   #==============================================
 
   #==============================================
@@ -294,7 +357,10 @@ server <- function(input, output, session) {
     aoi_order = systhetic$aoi_order
   )
 
-  observeEvent(input$data_src, {
+  toListen_vizData <- reactive({
+    list(input$go, input$glitch_width, input$data_src)
+  })
+  observeEvent(toListen_vizData(), {
     # select user input
     if(input$data_src == "user_data"){
       values_for_viz$eye_movement_data_alp_df = values$eye_movement_data_alp_df
@@ -307,16 +373,16 @@ server <- function(input, output, session) {
       values_for_viz$aoi_order = values$aoi_order
     } else {
     # select demo data
-      values_for_viz$eye_movement_data_alp_df = systhetic$eye_movement_data_alp_df
-      values_for_viz$plot_height = systhetic$plot_height
-      values_for_viz$max_nr_transitions = systhetic$max_nr_transitions
-      values_for_viz$max_sum_dwell_duration = systhetic$max_sum_dwell_duration
-      values_for_viz$participant_list = systhetic$participant_list
-      values_for_viz$palette = systhetic$palette
-      values_for_viz$legend = systhetic$legend
-      values_for_viz$aoi_order = systhetic$aoi_order
+      values_for_viz$eye_movement_data_alp_df = syn_values$eye_movement_data_alp_df
+      values_for_viz$plot_height = syn_values$plot_height
+      values_for_viz$max_nr_transitions = syn_values$max_nr_transitions
+      values_for_viz$max_sum_dwell_duration = syn_values$max_sum_dwell_duration
+      values_for_viz$participant_list = syn_values$participant_list
+      values_for_viz$palette = syn_values$palette
+      values_for_viz$legend = syn_values$legend
+      values_for_viz$aoi_order = syn_values$aoi_order
     }
-  })
+  }, ignoreInit = TRUE)
   #==============================================
 
   # to allow users to choose the participants they want to visualize Alpscarf
