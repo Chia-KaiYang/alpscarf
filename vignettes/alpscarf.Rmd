@@ -13,7 +13,7 @@ vignette: >
 Import the library we suggest to use and the package _alpscarf_.
 ```{r setup, echo = FALSE}
 library(tidyverse)
-import::from(cowplot, plot_grid)
+#import::from(cowplot, plot_grid)
 import::from(magrittr, "%<>%")
 library(alpscarf)
 library(RColorBrewer)
@@ -141,7 +141,9 @@ for(a_p_name in unique(eye_movement_data_systhetic_alp_df$p_name)){
 }
 
 # plot Alpscarf for all participants
-plot_grid(lsa_scarf_vis[[1]], lsa_scarf_vis[[2]], lsa_scarf_vis[[3]], ncol = 1)
+plot(lsa_scarf_vis[[1]])
+plot(lsa_scarf_vis[[2]])
+plot(lsa_scarf_vis[[3]])
 ```
 
 Notice that, ```ymax``` specify the height of each plot. To make all Alpscarf comparable, generating Alpscarfs in the same height is highly recommended.
@@ -190,7 +192,10 @@ for(a_p_name in unique(eye_movement_data_systhetic_alp_df$p_name)){
 }
 
 # plot Alpscarf for all participants
-plot_grid(lsa_scarf_vis[[1]], lsa_scarf_vis[[2]], lsa_scarf_vis[[3]], ncol = 1)
+plot(lsa_scarf_vis[[1]])
+plot(lsa_scarf_vis[[2]])
+plot(lsa_scarf_vis[[3]])
+
 ```
 
 In addition to setting ```NORMALIZED_VIEW = FALSE```, unnormalized view requires two extra arguments: ```max_nr_transitions``` and ```max_sum_dwell_duration```, which define the maximun length of plots in __transition-focus__ mode and __duraiton-focus__ mode respectivelty.
