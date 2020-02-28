@@ -84,7 +84,7 @@ alpscarf_conform <- function(df_p = NULL, aoi_names_pages_seq = NULL, s_min = 2)
 
   for(i in 1 : length(df_p$AOI)){
     if (i <= (length(df_p$AOI) - s_min + 1)){
-      for(s in s_min : min(length(df_p$AOI_order), length(df_p$AOI) - i + 1)){
+      for(s in s_min : min(length(aoi_names_pages_seq$AOI_order), length(df_p$AOI) - i + 1)){
         order_check <- df_p$AOI_order[i + s - 1] - df_p$AOI_order[i + s - 2]
         if(order_check == 1){
           c[i: (i + s - 1)] <- c[i: (i + s - 1)] + 1
