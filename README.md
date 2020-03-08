@@ -27,7 +27,7 @@ The package would first calculate the height (`alpscarf_height_trans`) and posit
 
 In `/vignettes/alpscarf.Rmd` you would find an example which guides users to generate Alpscarf step by step.
 
-# Intertactive Alpscarf
+# (NEW!!) Intertactive Alpscarf
 
 In `/app/app.R` you would find a shiny app which allows for interactively playing with different modes (e.g., transition-/duration focus, unnormalized/normalized view) in Alpscarf. The app also allows users to specify the threshold of the glitches to be filtered out. You can download the plot and save it locally.
 
