@@ -27,11 +27,16 @@ The package would first calculate the height (`alpscarf_height_trans`) and posit
 
 In `/vignettes/alpscarf.Rmd` you would find an example which guides users to generate Alpscarf step by step.
 
-# (new) Intertactive demo
+# Intertactive Alpscarf
 
-In `/app/app.R` you would find a shiny app which provides an interative demo of Alpscarf. Install the `shiny` package first and you can interactively experience how different modes (e.g., transition-/duration focus, unnormalized/normalized view) play their roles in Alpscarf.
+In `/app/app.R` you would find a shiny app which allows for interactively playing with different modes (e.g., transition-/duration focus, unnormalized/normalized view) in Alpscarf. The app also allows users to specify the threshold of the glitches to be filtered out. You can download the plot and save it locally.
 
-The interactive demo already comes with a sample data for demosntration purpose. It also supports users to play with their own data. The provided data **must** includes two `csv` files: (similar to the Usage section), separated by **commas**. Do not leave any cell free, all cells must be filled with the according info.
+There are two ways you can play with the Interactive Alpscarf:
+
+1. Utilize the app deployed on Shinyapps.io: [Interactive Alpscarf](https://chia-kai-yang.shinyapps.io/Alpscarf/)
+1. Install the `shiny` package and run the app locally in RStudio IDE
+
+The Interactive Alpscarf already comes with a sample data for demosntration purpose. It also supports users to play with their own data. The provided data **must** includes two `csv` files: (similar to the Usage section), separated by **commas**. Do not leave any cell free, all cells must be filled with the according info.
 1. `AOI visits` with 3 columns: "p_name" "AOI" "dwell_duration". Below table shows how such dataset should look like.
    
 |p_name | AOI | dwell_duration|
