@@ -27,11 +27,16 @@ The package would first calculate the height (`alpscarf_height_trans`) and posit
 
 In `/vignettes/alpscarf.Rmd` you would find an example which guides users to generate Alpscarf step by step.
 
-# (new) Intertactive demo
+# (NEW!!) Intertactive Alpscarf
 
-In `/app/app.R` you would find a shiny app which provides an interative demo of Alpscarf. Install the `shiny` package first and you can interactively experience how different modes (e.g., transition-/duration focus, unnormalized/normalized view) play their roles in Alpscarf.
+In `/app/app.R` you would find a shiny app which allows for interactively playing with different modes (e.g., transition-/duration focus, unnormalized/normalized view) in Alpscarf. The app also allows users to specify the threshold of the glitches to be filtered out. You can download the plot and save it locally.
 
-The interactive demo already comes with a sample data for demosntration purpose. It also supports users to play with their own data. The provided data **must** includes two `csv` files: (similar to the Usage section), separated by **commas**. Do not leave any cell free, all cells must be filled with the according info.
+There are two ways you can play with the Interactive Alpscarf:
+
+1. Utilize the app deployed on Shinyapps.io: [Interactive Alpscarf](https://chia-kai-yang.shinyapps.io/Alpscarf/)
+1. Install the `shiny` package and run the app locally in RStudio IDE
+
+The Interactive Alpscarf already comes with a sample data for demosntration purpose. It also supports users to play with their own data. The provided data **must** includes two `csv` files: (similar to the Usage section), separated by **commas**. Do not leave any cell free, all cells must be filled with the according info.
 1. `AOI visits` with 3 columns: "p_name" "AOI" "dwell_duration". Below table shows how such dataset should look like.
    
 |p_name | AOI | dwell_duration|
@@ -61,30 +66,28 @@ The interactive demo already comes with a sample data for demosntration purpose.
 If you use Alpscarf in your research, we would appreciate if you can insert the following citation
 
 
-> Chia-Kai Yang and Chat Wacharamanotham. 2018. Alpscarf: Augmenting Scarf Plots for Exploring Temporal Gaze Patterns. In Extended Abstracts of the 2018 CHI Conference on Human Factors in Computing Systems (CHI EA '18). ACM, New York, NY, USA, Paper LBW503, 6 pages. DOI: https://doi.org/10.1145/3170427.3188490
+> Chia-Kai Yang and Chat Wacharamanotham. 2018. Alpscarf: Augmenting Scarf Plots for Exploring Temporal Gaze Patterns. In Extended Abstracts of the 2018 CHI Conference on Human Factors in Computing Systems (CHI EA ’18). Association for Computing Machinery, New York, NY, USA, 1–6. DOI:https://doi.org/10.1145/3170427.3188490
 
 
 In bibtex:
 
 ```
-@inproceedings{Yang:2018:AAS:3170427.3188490,
- author = {Yang, Chia-Kai and Wacharamanotham, Chat},
- title = {Alpscarf: Augmenting Scarf Plots for Exploring Temporal Gaze Patterns},
- booktitle = {Extended Abstracts of the 2018 CHI Conference on Human Factors in Computing Systems},
- series = {CHI EA '18},
- year = {2018},
- isbn = {978-1-4503-5621-3},
- location = {Montreal QC, Canada},
- pages = {LBW503:1--LBW503:6},
- articleno = {LBW503},
- numpages = {6},
- url = {http://doi.acm.org/10.1145/3170427.3188490},
- doi = {10.1145/3170427.3188490},
- acmid = {3188490},
- publisher = {ACM},
- address = {New York, NY, USA},
- keywords = {eye movement, scarf plot, transitions, visualization},
-} 
+@inproceedings{10.1145/3170427.3188490,
+author = {Yang, Chia-Kai and Wacharamanotham, Chat},
+title = {Alpscarf: Augmenting Scarf Plots for Exploring Temporal Gaze Patterns},
+year = {2018},
+isbn = {9781450356213},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3170427.3188490},
+doi = {10.1145/3170427.3188490},
+booktitle = {Extended Abstracts of the 2018 CHI Conference on Human Factors in Computing Systems},
+pages = {1–6},
+numpages = {6},
+keywords = {transitions, visualization, scarf plot, eye movement},
+location = {Montreal QC, Canada},
+series = {CHI EA ’18}
+}
 ```
 
 ## See also
