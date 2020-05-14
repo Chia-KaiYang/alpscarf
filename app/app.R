@@ -1,11 +1,15 @@
 
 library(shiny)
 library(tidyverse)
-import::from(cowplot, plot_grid)
-import::from(cowplot, get_legend)
-import::from(stringr, str_sort)
-import::from(rlist, list.append)
-import::from(magrittr, "%<>%")
+library(cowplot)
+library(stringr)
+library(rlist)
+library(magrittr)
+#import::from(cowplot, plot_grid)
+#import::from(cowplot, get_legend)
+#import::from(stringr, str_sort)
+#import::from(rlist, list.append)
+#import::from(magrittr, "%<>%")
 library(alpscarf)
 
 merge_sequence <- function(lsa_df_) {
@@ -36,7 +40,7 @@ merge_sequence <- function(lsa_df_) {
 }
 
 # specify dataset name & path
-dataset_path = "../data"
+dataset_path = "./data"
 example_dataset <- file.path(dataset_path, "example_eye_movement_data.RData")
 expected_aoi_sequence <- file.path(dataset_path, "aoi_sequence.RData")
 
