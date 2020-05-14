@@ -79,15 +79,34 @@ alpscarf_conform <- function(df_p = NULL, aoi_names_pages_seq = NULL, s_min = 2)
   # initialize conformity score
   c <- rep(0, length(df_p$AOI))
   # merge with the expected visit order
-  df_p %<>%
-    left_join(.,aoi_names_pages_seq, by = c("AOI"))
+  #df_p %<>%
+  #  left_join(.,aoi_names_pages_seq, by = c("AOI"))
+
+  # generate the sequence of interest in string
+  seq_of_interest <-
+    aoi_names_pages_seq %>%
+    arrange(AOI_order) %>%
+    pull(AOI) %>%
+    paste0(collapse = "_") %>%
+    paste0("_")
 
   for(i in 1 : length(df_p$AOI)){
     if (i <= (length(df_p$AOI) - s_min + 1)){
       for(s in s_min : min(length(aoi_names_pages_seq$AOI_order), length(df_p$AOI) - i + 1)){
-        order_check <- df_p$AOI_order[i + s - 1] - df_p$AOI_order[i + s - 2]
-        if(order_check == 1){
-          c[i: (i + s - 1)] <- c[i: (i + s - 1)] + 1
+
+        #order_check <- df_p$AOI_order[i + s - 1] - df_p$AOI_order[i + s - 2]
+
+        # generate the local sequence to compare (with seq_of_interest)
+        seq_to_compare <-
+          df_p$AOI[i: (i+ s - 1)] %>% paste0(collapse = "_")
+        # count the frequency of seq_to_compare in seq_of_interest
+        freq_seq <-
+          str_count(seq_of_interest, pattern = seq_to_compare)
+
+        #if(order_check == 1){
+        if(freq_seq >= 1){
+          #c[i: (i + s - 1)] <- c[i: (i + s - 1)] + 1
+          c[i: (i + s - 1)] <- c[i: (i + s - 1)] + freq_seq
         } else {
           break
         }
