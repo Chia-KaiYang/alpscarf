@@ -85,6 +85,7 @@ alpscarf_conform <- function(df_p = NULL, aoi_names_pages_seq = NULL, s_min = 2)
   # generate the sequence of interest in string
   seq_of_interest <-
     aoi_names_pages_seq %>%
+    filter(AOI_order > 0) %>%
     arrange(AOI_order) %>%
     pull(AOI) %>%
     paste0(collapse = "_") %>%
