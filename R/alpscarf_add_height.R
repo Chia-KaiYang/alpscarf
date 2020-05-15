@@ -99,7 +99,9 @@ alpscarf_conform <- function(df_p = NULL, aoi_names_pages_seq = NULL, s_min = 2)
 
         # generate the local sequence to compare (with seq_of_interest)
         seq_to_compare <-
-          df_p$AOI[i: (i+ s - 1)] %>% paste0(collapse = "_")
+          df_p$AOI[i: (i+ s - 1)] %>%
+          paste0(collapse = "_") %>%
+          paste0("_")
         # count the frequency of seq_to_compare in seq_of_interest
         freq_seq <-
           str_count(seq_of_interest, pattern = seq_to_compare)
